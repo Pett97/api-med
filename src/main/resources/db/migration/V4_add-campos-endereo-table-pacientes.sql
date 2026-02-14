@@ -1,0 +1,7 @@
+alter table pacientes add  bairro varchar(100) not null default "",
+   logradouro varchar(255) not null,
+   cep varchar(9) not null,
+   complemento varchar(100),
+   numero varchar(20),
+   uf char(2),
+   cidade varchar(100) not null,
