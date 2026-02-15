@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import med.voli.api.Paciente.DadosAtualizarPaciente;
 import med.voli.api.Paciente.DadosCadastroPaciente;
 import med.voli.api.Paciente.DadosListagemPacientes;
