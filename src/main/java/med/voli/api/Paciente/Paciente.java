@@ -10,19 +10,19 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import med.voli.api.DadosEndereco.DadosEndereco;
 import med.voli.api.Models.Endereco;
 
 @Table(name = "pacientes")
-@Entity(name = "Paciente")
+@Entity(name = "pacientes")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of ="id")
+@EqualsAndHashCode(of = "id")
 public class Paciente {
    @Id
-   @GeneratedValue(strategy= GenerationType.IDENTITY)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
+   private boolean ativo;
    private String nome;
    private String email;
    private String telefone;
@@ -31,11 +31,29 @@ public class Paciente {
    @Embedded
    private Endereco endereco;
 
-   public Paciente(DadosCadastroPaciente dados){
+   public Paciente(DadosCadastroPaciente dados) {
       this.nome = dados.nome();
       this.email = dados.email();
       this.cpf = dados.cpf();
-      this.teleftelefoneone = dados.telefone();
+      this.telefone = dados.telefone();
       this.endereco = new Endereco(dados.endereco());
    }
+
+   public void atualizarDados(DadosAtualizarPaciente dados) {
+      if (dados.nome() != null) {
+         this.nome = dados.nome();
+      }
+      if (dados.telefone() != null) {
+         this.telefone = dados.telefone();
+      }
+
+      if (dados.endereco() != null) {
+         this.endereco.atualizarDados(dados.endereco());
+      }
+   }
+
+   public void desativar(){
+      this.ativo = false;
+   }
+   
 }
