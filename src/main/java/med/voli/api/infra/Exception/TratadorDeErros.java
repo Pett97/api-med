@@ -1,4 +1,4 @@
-package med.voli.api.infra;
+package med.voli.api.infra.Exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,7 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 public class TratadorDeErros {
 
    @ExceptionHandler(EntityNotFoundException.class)
-   public ResponseEntity tratarErro404() {
+   public ResponseEntity<Void> tratarErro404() {
       return ResponseEntity.notFound().build();
    }
 
@@ -25,7 +25,7 @@ public class TratadorDeErros {
    private record DadosErrosValidacao(String campo, String messagem) {
 
       public DadosErrosValidacao(FieldError error) {
-         this(campo = error.getField(), messagem = error.getDefaultMessage());
+         this(error.getField(), error.getDefaultMessage());
       }
    }
 }
