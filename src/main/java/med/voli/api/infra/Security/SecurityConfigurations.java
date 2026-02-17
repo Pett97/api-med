@@ -1,5 +1,6 @@
 package med.voli.api.infra.Security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,20 +16,29 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfigurations {
 
+   @Autowired
+   private SecurityFilter securityFilter;
+
    @Bean
    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       return http.csrf(csrf -> csrf.disable())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(req -> {
+               req.requestMatchers("/login").permitAll();
+               req.anyRequest().authenticated();
+            })
+            .addFilterBefore(securityFilter,
+                  org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
             .build();
    }
 
    @Bean
-   public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+   public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
       return config.getAuthenticationManager();
    }
 
    @Bean
-   public PasswordEncoder passwordEncoder(){
+   public PasswordEncoder passwordEncoder() {
       return new BCryptPasswordEncoder();
    }
 }
