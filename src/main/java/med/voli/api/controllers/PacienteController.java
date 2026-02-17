@@ -33,7 +33,7 @@ public class PacienteController {
 
       @PostMapping
       @Transactional
-      public ResponseEntity Cadastrar(@RequestBody @Valid DadosCadastroPaciente dados, UriComponentsBuilder uBuilder) {
+      public ResponseEntity<DadosDetalhamentoPaciente> Cadastrar(@RequestBody @Valid DadosCadastroPaciente dados, UriComponentsBuilder uBuilder) {
 
             var paciente = new Paciente(dados);
             pacienteRepository.save(paciente);
@@ -51,7 +51,7 @@ public class PacienteController {
 
       @PutMapping
       @Transactional
-      public ResponseEntity atualizarDados(@RequestBody @Valid DadosAtualizarPaciente dados) {
+      public ResponseEntity<DadosDetalhamentoPaciente> atualizarDados(@RequestBody @Valid DadosAtualizarPaciente dados) {
             var paciente = pacienteRepository.getReferenceById(dados.id());
             paciente.atualizarDados(dados);
             return ResponseEntity.ok(new DadosDetalhamentoPaciente(paciente));
@@ -60,7 +60,7 @@ public class PacienteController {
 
       @DeleteMapping("/{id}")
       @Transactional
-      public ResponseEntity deletar(@PathVariable long id) {
+      public ResponseEntity<Void> deletar(@PathVariable long id) {
             var paciente = pacienteRepository.getReferenceById(id);
             paciente.desativar();
 
