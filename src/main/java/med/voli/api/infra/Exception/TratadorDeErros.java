@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.persistence.EntityNotFoundException;
+import med.voli.api.domain.ValidacaoExecption;
 
 @RestControllerAdvice
 public class TratadorDeErros {
@@ -20,6 +21,11 @@ public class TratadorDeErros {
    public ResponseEntity tratarErro400(MethodArgumentNotValidException ex) {
       var erros = ex.getFieldErrors();
       return ResponseEntity.badRequest().body(erros.stream().map(DadosErrosValidacao::new).toList());
+   }
+
+   @ExceptionHandler(ValidacaoExecption.class)
+   public ResponseEntity tratarErroRegraDeNegocio(ValidacaoExecption ex) {
+      return ResponseEntity.badRequest().body(ex.getMessage());
    }
 
    private record DadosErrosValidacao(String campo, String messagem) {
