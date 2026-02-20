@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import med.voli.api.domain.ValidacaoExecption;
+import med.voli.api.domain.Consulta.Validacoes.ValidadoCancelamento;
 import med.voli.api.domain.Consulta.Validacoes.ValidadorAgendamentoDeConsultas;
 import med.voli.api.domain.Medico.Medico;
 import med.voli.api.domain.Medico.MedicoRepository;
@@ -20,13 +21,16 @@ public class AgendaConsulta {
    private MedicoRepository medicoRepository;
    @Autowired
    private PacienteRepository pacienteRepository;
+
    @Autowired
    private List<ValidadorAgendamentoDeConsultas> validadores;
+
+   @Autowired
+   private List<ValidadoCancelamento> validadoresCancelamentoConsulta;
 
    public DtoDetalhamentoConsulta agendar(DtoAgendamentoConsulta dados) {
       validadores.forEach(validador -> validador.validar(dados));
       var medico = escolherMedico(dados);
-      System.out.println("MEDICO ESCOLHDIO" + medico);
       var paciente = pacienteRepository.getReferenceById(dados.idPaciente());
       var consulta = new Consulta(null, medico, paciente, dados.data(), null);
       consultaRespository.save(consulta);
@@ -36,6 +40,11 @@ public class AgendaConsulta {
    }
 
    private Medico escolherMedico(DtoAgendamentoConsulta dados) {
+      if (dados.idMedico() != null) {
+         var medico = medicoRepository.getReferenceById(dados.idMedico());
+         return medico;
+      }
+
       var medico = medicoRepository.escolherMedicoAleatorioLivreNaData(dados.especialidade(), dados.data());
 
       if (medico == null) {
@@ -45,10 +54,7 @@ public class AgendaConsulta {
    }
 
    public void cancelar(DtoCancalmentoConsulta dados) {
-      if (!consultaRespository.existsById(dados.idConsulta())) {
-         throw new ValidacaoExecption("Id da consulta informado não existe!");
-      }
-
+      validadoresCancelamentoConsulta.forEach(validador -> validador.validar(dados));
       var consulta = consultaRespository.getReferenceById(dados.idConsulta());
       consulta.cancelar(dados.motivoCancelamento());
    }
